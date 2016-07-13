@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 	          files: [
 	            {
 	              expand: true,
-	              cwd: '/Users/SUReYeAh/.jenkins/jobs/SPEED_DATA/workspace/SPEED_DATA',
+	              cwd: '/Users/SUReYeAh/.jenkins/jobs/SPEED_DATA/workspace/SPEED_DATA/WebContent',
 	              src: ['**'],
 	              dest: ''
 	            }
