@@ -15,47 +15,42 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 public class GetVehicles extends HttpServlet {
 
-private static final long serialVersionUID = -7913012034304166616L;
+	private static final long serialVersionUID = -7913012034304166616L;
 
-public void doGet(HttpServletRequest request,
-                 HttpServletResponse response)
-         throws ServletException, IOException
-	{
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Properties prop = new Properties();
 		String propFileName = "resources/config.properties";
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
 		if (inputStream != null) {
 			prop.load(inputStream);
-		} 
+		}
 
 		Cluster cluster;
 		Session session;
 		ResultSet results;
 
-		cluster = Cluster
-			.builder()
-			.addContactPoint(prop.getProperty("database"))
-			.build();
+		cluster = Cluster.builder().addContactPoint(prop.getProperty("database")).build();
 		session = cluster.connect(prop.getProperty("keyspace"));
 
-		Statement select = QueryBuilder.select().all().from(prop.getProperty("keyspace"), prop.getProperty("vehicletable"));
+		Statement select = QueryBuilder.select().all().from(prop.getProperty("keyspace"),
+				prop.getProperty("vehicletable"));
 		results = session.execute(select);
-		
+
 		JSONArray jArray = new JSONArray();
 
 		for (Row row : results) {
 			JSONObject jObject = new JSONObject();
-			jObject.put("id",row.getInt("vehicleid"));
-			jObject.put("title",row.getString("vehicle_brand"));
+			jObject.put("id", row.getInt("vehicleid"));
+			jObject.put("title", row.getString("vehicle_brand"));
 			jArray.put(jObject);
-//			 System.out.println(jArray);
+			// System.out.println(jArray);
 		}
 
 		JSONObject json = new JSONObject();
-		json.put ("vehicleList",jArray);
+		json.put("vehicleList", jArray);
 
 		cluster.close();
-			
+
 		response.setContentType("application/json");
 		response.setCharacterEncoding("utf-8");
 		PrintWriter out = response.getWriter();

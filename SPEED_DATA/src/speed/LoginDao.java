@@ -10,41 +10,38 @@ import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
-public class LoginDao {  
-	
-public static String validate(String name,String pass) throws IOException{  
-	String status="false";  
-	try{
-		Properties prop = new Properties();
-		String propFileName = "/resources/config.properties";
-		InputStream inputStream = LoginDao.class.getResourceAsStream(propFileName);
-		if (inputStream != null) {
-			prop.load(inputStream);
-		} 
+public class LoginDao {
 
-		Cluster cluster;
-		Session session;
-		ResultSet results;
-//		Row rows;
+	public static String validate(String name, String pass) throws IOException {
+		String status = "false";
+		try {
+			Properties prop = new Properties();
+			String propFileName = "/resources/config.properties";
+			InputStream inputStream = LoginDao.class.getResourceAsStream(propFileName);
+			if (inputStream != null) {
+				prop.load(inputStream);
+			}
 
-		cluster = Cluster
-		.builder()
-		.addContactPoint(prop.getProperty("database"))
-		.build();
-		session = cluster.connect(prop.getProperty("keyspace"));
+			Cluster cluster;
+			Session session;
+			ResultSet results;
+			// Row rows;
 
-		Statement select = QueryBuilder.select().from(prop.getProperty("keyspace"), prop.getProperty("usertable")).where(QueryBuilder.eq("username",name)).and(QueryBuilder.eq("password",pass));
-		results = session.execute(select);
-		int i=0;
-		i=results.all().size();
-		if(i>0)	{
-			status="true";
-		}
-		cluster.close();
-	    }
-		catch(NoHostAvailableException e){
+			cluster = Cluster.builder().addContactPoint(prop.getProperty("database")).build();
+			session = cluster.connect(prop.getProperty("keyspace"));
+
+			Statement select = QueryBuilder.select().from(prop.getProperty("keyspace"), prop.getProperty("usertable"))
+					.where(QueryBuilder.eq("username", name)).and(QueryBuilder.eq("password", pass));
+			results = session.execute(select);
+			int i = 0;
+			i = results.all().size();
+			if (i > 0) {
+				status = "true";
+			}
+			cluster.close();
+		} catch (NoHostAvailableException e) {
 			status = "Make Sure Cassandra is up and running..";
-		}  
-	return status;  
-	}  
-}  
+		}
+		return status;
+	}
+}
